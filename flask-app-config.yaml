@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flask-app-config
+data:
+  app.py: |
+    from flask import Flask
+    import os
+    import mysql.connector
+    
+    app = Flask(__name__)
+
+    mysql_host = os.getenv('MYSQL_HOST')
+    mysql_user = os.getenv('MYSQL_USER')
+    mysql_password = os.getenv('MYSQL_PASSWORD')
+    mysql_db = os.getenv('MYSQL_DATABASE')
+
+    @app.route('/')
+    def index():
+        try:
+            connection = mysql.connector.connect(
+                host=mysql_host,
+                user=mysql_user,
+                password=mysql_password,
+                database=mysql_db
+            )
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM users")
+            users = cursor.fetchall()
+            return f"Users in the database: {users}"
+        except mysql.connector.Error as err:
+            return f"Error: {err}"
+        finally:
+            cursor.close()
+            connection.close()
+
+    if __name__ == "__main__":
+        app.run(debug=True, host='0.0.0.0', port=5000)

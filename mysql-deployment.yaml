@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-poc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-poc
+  template:
+    metadata:
+      labels:
+        app: mysql-poc
+    spec:
+      containers:
+        - name: mysql-poc
+          image: mysql:5.7
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-poc-secret
+                  key: password
+            - name: MYSQL_DATABASE
+              value: "flaskdb"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-poc-secret
+                  key: user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-poc-secret
+                  key: password
+          ports:
+            - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-poc-service
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: mysql-poc
