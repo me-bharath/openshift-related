@@ -18,16 +18,16 @@ spec:
           command: ["python", "/app/app.py"]
           env:
             - name: MYSQL_HOST
-              value: mysql-poc--service  # The name of the mysql-poc- service
+              value: mysql-poc-service  # The name of the mysql-poc- service
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
-                  name: mysql-poc--secret
+                  name: mysql-poc-secret
                   key: user
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mysql-poc--secret
+                  name: mysql-poc-secret
                   key: password
             - name: MYSQL_DATABASE
               value: flaskdb  # The database that Flask will connect to
